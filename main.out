@@ -1,0 +1,23 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Motivation and Running Example}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Strategic Incompleteness in Specification}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Running Example}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Approach Overview}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Constructive Logic \046 Certified Programming with Dependent Types}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Formal Synthesis from Specifications}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.3}{Scalable Big Data Analytics}{section.3}% 8
+\BOOKMARK [1][-]{section.4}{A Constructive Logic Based Framework of Tradeoffs}{}% 9
+\BOOKMARK [2][-]{subsection.4.1}{Astronaut Typeclass}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.2}{Tradespace Typeclass}{section.4}% 11
+\BOOKMARK [1][-]{section.5}{Framework Instantiation}{}% 12
+\BOOKMARK [1][-]{section.6}{Parallelization Reasoning}{}% 13
+\BOOKMARK [1][-]{section.7}{Experimental Evaluation}{}% 14
+\BOOKMARK [2][-]{subsection.7.1}{Experimental Objects}{section.7}% 15
+\BOOKMARK [2][-]{subsection.7.2}{Experimental Setup and Data Collection}{section.7}% 16
+\BOOKMARK [2][-]{subsection.7.3}{Astronaut vs. Industrial Platforms}{section.7}% 17
+\BOOKMARK [2][-]{subsection.7.4}{Improvements in Practice}{section.7}% 18
+\BOOKMARK [2][-]{subsection.7.5}{Performance and Timing}{section.7}% 19
+\BOOKMARK [1][-]{section.8}{Discussion}{}% 20
+\BOOKMARK [1][-]{section.9}{Related Work}{}% 21
+\BOOKMARK [1][-]{section.10}{CONCLUDING REMARKS}{}% 22
+\BOOKMARK [1][-]{section*.11}{References}{}% 23
