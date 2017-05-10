@@ -477,10 +477,10 @@ The logic of the algorithm is as follows. For each abstract measurement function
 In this section, we evaluate the effectiveness of three ORM tools in generating schemas with valued properties, as well as the effectiveness of our framework in supportring tradespace analysis. Therefore, we conducted a set of experiments to address the following research questions:
 
 \begin{itemize}
-\item \textbf{RQ1.} Does \@approach tradespace analysis enable production of Pareto-optimal schemas that are entirely overlooked by widely-used, industrial ORM tools? 
-\item \textbf{RQ2.} What is the performance improvement achieved by \@approach's schemas compared to those produced by industrial tools? 
+\item \textbf{RQ1.} Does tradespace analysis enable production of Pareto-optimal schemas that are entirely overlooked by widely-used, industrial ORM tools? 
+\item \textbf{RQ2.} What is the performance improvement achieved by tradespace analysis strategy compared to single-point strategt used by industrial tools? 
 \item \textbf{RQ3.} What is the overhead of Astronaut in conducting tradespace analysis?
-\item \textbf{RQ4.} Does DBMS related to optimal solutions? What’s the difference in performance results across different DMBSs?
+\item \textbf{RQ4.} Does a database management systems (DBMS) have impact on the optimal solutions? What's the difference in performance results across different DBMSs?
 \end{itemize}
 
 This section summarizes the design and execution of our experiment, the data we collected, its interpretation, and our results.
@@ -488,27 +488,35 @@ This section summarizes the design and execution of our experiment, the data we 
 
 \subsection{Experimental Objects}
 
-Our experimental subjects are selected from different sources and of a variety of different domains, ranging from our research lab projects to applications adopted from the database literature and open-source software communities. 
+Our experimental object models are selected from different sources and of a variety of different domains, ranging from our research lab projects to applications adopted from the database literature and open-source software communities. 
 
-The first is the object model of an E-commerce system adopted from Lau and Czarnecki~\cite{sean_quan_lau_domain_2006}. It represents a common architecture for open-source and commercial E-commerce systems. It has 15 classes connected by 9 associations with 7 inheritance relationships. The second and third object models are for systems we are developing in our lab. Decider is another system to support design space exploration. Its object model has 10 Classes, 11 Associations, and 5 inheritance relationships. The third object model is for the CSOS system, a  cyber-social operating system meant to help coordinate people and tasks. In scale, it has 14 Classes, 4 Associations, and 6 inheritance relationships. The fourth object model is the object model of a documents sharing application called Flagship Docs built with Ruby on Rails at Rensselaer Polytech \cite{FlagshipDocs4}. It has 6 classes connected by 8 associations with no inheritance relationships. We also analyzed an extended version of the customer-order example from the work Bagheri et al.~\cite{trademaker}.
- 
-The selected experimental subjects are representatives of large classes of useful applications at a scale matched to the state-of-the-art synthesis techniques. Their databases have multiple tables, and several relationships among these tables. There are multiple ownership relationships among these tables, which induce many possible choices of object-model to relational schema mappings.
+The first is the object model of an E-commerce system adopted from Lau and Czarnecki~\cite{sean_quan_lau_domain_2006}. It represents a common architecture for open-source and commercial E-commerce systems. It has 15 classes connected by 9 associations with 7 inheritance relationships. The second and third object models are for systems we are developing in our lab. Decider is another system to support design space exploration. Its object model has 10 Classes, 11 Associations, and 5 inheritance relationships. The third object model is for the CSOS system, a  cyber-social operating system meant to help coordinate people and tasks. In scale, it has 14 Classes, 4 Associations, and 6 inheritance relationships. The fourth object model is the object model of a documents sharing application called Flagship Docs built with Ruby on Rails at Rensselaer Polytech \cite{FlagshipDocs4}. It has 6 classes connected by 8 associations with no inheritance relationships. We also analyzed an extended version of the customer-order example from the work Bagheri et al.~\cite{trademaker}. The selected experimental subjects are representatives of large classes of useful applications at a scale matched to the state-of-the-art synthesis techniques. Their databases have multiple tables, and several relationships among these tables. There are multiple ownership relationships among these tables, which induce many possible choices of object-model to relational schema mappings.
 
+We chosen two popular DBMSs in our evaluation, namely MySQL and PostgreSQL. They are the most popular open-source DBMSs in the object-relational database industry. 
 
 \subsection{Experimental Setup and Data Collection}
+We setup a Spark~\cite{spark_paper} cluster on Amazon Web Service (AWS) with 1 master node and 10 slave nodes. We used an \emph{r4.xlarge} EC2 instance as the master node because the schema synthesis process needs large memory and high computation power. For slave nodes, we used 10 \emph{m4.large} EC2 instances as they only need to execute the test cases to evaluate the runtime performance of schemas.  
 
 For a given object model, we follow next steps to evaluate the effectiveness of experimental ORM tools:
 
 \begin{itemize}
 \item \textbf{Step \#1:} We first create three database schemas using Hibernate, Rails, and Django.
+
 \item \textbf{Step \#2:} Then, we translate the given object model to a formal specification with the object-modeling language developed by Bagheri et al.~\cite{trademaker}.
-\item \textbf{Step \#3:} With Astronaut, the tool we developed, we synthesize the formal specification to a set of database schemas and corresponding test loads, evaluate them with Spark~\cite{spark_paper}.  The resulting data is a list of tuples where each one contains three runtime performance metric: data population time, retrieval time, and disk space consumption.
-\item \textbf{Step \#4:} For each synthesized schema, we evaluate three understandability metrics we discussed above. The overall understandability is the summation of these three metrics.
-\item \textbf{Step \#5:} 
-\item \textbf{Step \#6:}
+
+\item \textbf{Step \#3:} With Astronaut, the tool developed in this project, we synthesize a design space and the corresponding test cases from the formal specification generated in \textit{Step \#2}. The synthesized design space contains the schemas created in \textit{Step \#1}. The test cases are two SQL scripts containing a set of \textit{INSERT} and \textit{SELECT} statements respectively which are used to profile the data population and retrieval performance. 
+
+\item \textbf{Step \#4:} We dynamically profile all schemas in parallel with Spark to obtain their runtime performance. We profile each schema three times to rule out other uncontrolled factors that might influence the data we collected. The resulting data is a list of triples where each one contains three metrics: data population time, retrieval time, and disk space consumption. Astronaut calls \emph{mysql} and \emph{psql} command line tools provided by MySQL and PostgreSQL respectively to execute the SQL scripts to obtain schemas' runtime performance.
+
+\item \textbf{Step \#5:} For each schema, we evaluate the three understandability metrics we discussed above. The overall understandability is their summation.
+
+\item \textbf{Step \#6:} At last, we find out where the schemas created in \textit{Step \#1} fall within the design space with respect to the runtime performance and understandability.
 \end{itemize}
 
-First, for given object models, we create database schemas using Hibernate, Rails, and Django. We then translate each one of the give models to the object-modeling language developed by Bagheri et al.~\cite{trademaker}. We chose to focus on \emph{CREATE} and \emph{READ} transactions for dynamic analysis of time performance of the target schemas. We wrote instrumentation code to return the desired time and space consumption data into the MapReduce computation. We used the \emph{mysql} client command to execute synthesized test loads, which our tool parses from internal Alloy representations into MySQL scripts. The first sets of statements were database structure creation scripts. Then \emph{insert} scripts were executed to populate each database with the test data generated in previous stages. The experimental data collected includes the time to run these commands as well as the space consumed by the databases. After populating the databases with test data, we executed \emph{READ} transactions, which are essentially collections of \emph{select} commands.  We ran each script three times to rule out other uncontrolled factors that might influence the data we collected. The evaluation results are a list of triples: insertion time, retrieval time, and space consumption. The final result reported in this paper is the average time and space performance.
+For each one of the five object models and the two DBMSs, we execute all these steps to obtain the runtime performance of different schemas on different DBMSs. The only exception is \textit{Step \#5}. We execute it only once for each schema, as understandability is a static metrics, and thus there is no need to execute multiple times.
+
+Besides the runtime performance and understandability, we also collected cost data of using AWS synthesize schemas and evaluating them. Such data will be used to answer \textit{RQ3}. 
+
 
 %\begin{comment}
 
@@ -522,7 +530,7 @@ First, for given object models, we create database schemas using Hibernate, Rail
 %\subsection{Experimental Results}
 %In this section, we present the experimental results about both our framework and the tradeoff space analysis.
 
-\subsection{Astronaut vs. Industrial Platforms} %%Comparison with Widely-used Tools}
+\subsection{Astronaut vs. Industrial Platforms}
 Figure~\ref{fig:analysis_result} depicts tradeoff analysis plots produced by \@approach.
 It projects the results into 2-D tradeoff plots: Each plot presents tradeoff information in two of the three dimensions for one subject system. 
 Each dot in the plots represents the analysis result of one schema. 
